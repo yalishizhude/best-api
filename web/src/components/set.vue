@@ -1,65 +1,53 @@
 <template lang="pug">
-  div
-    el-form.setting(ref='setting', :model='setting', label-position='right', label-width='100px')
-      el-row
-        el-col(:span='12')
-          el-form-item.ta-l.mb-10(label='')
-            img.company-logo.d-ib(:src='setting.companyLogo', alt='公司logo')
-            el-upload.d-ib(action='/api/upload/img', :headers='headers', :show-file-list='false', :on-success='uploadSuccess', :on-err='uploadFail') 上传图片
-          el-form-item.ta-l.mb-10(label='公司名称')
-            el-input.w-200(v-model='setting.companyName', size='small')
-          el-form-item.ta-l.mb-10(label='备份大小')
-            el-input.w-200(v-model='setting.backupSize', size='small')
-            span MB
-          el-form-item.ta-l.mb-10(label='钉钉URL')
-            el-input.w-200(v-model='setting.dingInformUrl', size='small')
-          el-form-item.ta-l.mb-10(label='钉钉通知')
-            el-checkbox-group(v-model='setting.dingInformOperation')
-              el-checkbox(label='addInterface', size='small') 添加接口
-              el-checkbox(label='deleteInterface', size='small') 删除接口
-              el-checkbox(label='editInterface', size='small') 编辑接口
-              el-checkbox(label='autoTestInterface', size='small') 自动测试接口
-          el-form-item.ta-l.mb-10(label='towerURL')
-            el-input.w-200(v-model='setting.towerInformUrl', size='small')
-          el-form-item.ta-l.mb-10(label='tower通知')
-            el-checkbox-group(v-model='setting.towerInformOperation')
-              el-checkbox(label='addInterface', size='small') 添加接口
-              el-checkbox(label='deleteInterface', size='small') 删除接口
-              el-checkbox(label='editInterface', size='small') 编辑接口
-              el-checkbox(label='autoTestInterface', size='small') 自动测试接口
-          el-form-item.ta-l.mb-10(label='自动测试')
-            el-switch(v-model='setting.testAuto', on-text='是', off-text='否', size='small')
-          el-form-item.ta-l.mb-10(label='测试时间')
-            el-time-select.w-200(v-model='setting.testTime', size='small', :picker-options="{start: '00:00', step: '00:30', end: '24:00'}")
-          el-form-item.ta-l.mb-10(label='测试间隔')
-            el-radio-group(v-model='setting.testInterval')
-              el-radio(label='hourly', size='small') 每时
-              el-radio(label='daily', size='small') 每天
-              el-radio(label='weekly', size='small') 每周
-              el-radio(label='monthly', size='small') 每月
-        el-col.template(:span='12')
-            span 接口导出模板
-            el-input(type='textarea', :rows='7', v-model='setting.reportTemplate')
-            span 自定义样式
-            el-input(type='textarea', :rows='7', v-model='setting.reportStyle', @change='previewApiTemplate')
+  div.wrap
+    el-form.setting.v-wrap(ref='setting', :model='setting', label-position='right', label-width='100px')
+      el-form-item.ta-l.mb-10(label='公司logo')
+        el-upload.avatar-uploader.d-ib(:disabled="disabled", action='/api/upload/img', :headers='headers', :show-file-list='false', :on-success='uploadSuccess', :on-err='uploadFail')
+          img.avatar.d-ib(v-if="setting.companyLogo", :src='setting.companyLogo', alt='logo')
+          i.el-icon-plus.avatar-uploader-icon(v-else="")
+      el-form-item.ta-l.mb-10(label='公司名称')
+        el-input.w-380(:disabled="disabled", v-model='setting.companyName', size='small')
+      el-form-item.ta-l.mb-10(label='备份大小')
+        el-input-number.w-380(:disabled="disabled", :min="0", :max="10240", v-model='setting.backupSize', size='small')
+        span &nbsp;MB
+      // el-form-item.ta-l.mb-10(label='自动测试')
+      //   el-switch(v-model='setting.testAuto', on-text='是', off-text='否', size='small')
+      // el-form-item.ta-l.mb-10(label='测试时间')
+      //   el-time-select(v-model='setting.testTime', size='small', :picker-options="{start: '00:00', step: '00:30', end: '24:00'}")
+      // el-form-item.ta-l.mb-10(label='测试间隔')
+      //   el-radio-group(v-model='setting.testInterval')
+      //     el-radio(label='hourly', size='small') 每时
+      //     el-radio(label='daily', size='small') 每天
+      //     el-radio(label='weekly', size='small') 每周
+      //     el-radio(label='monthly', size='small') 每月
+      el-form-item.ta-l.mb-10(label='导出模板')
+        el-row
+          el-col.preview-col(:span="8")
+            span html
+            el-input(:disabled="disabled", type='textarea', :rows='20', v-model='setting.reportTemplate', @keyup='previewApiTemplate')
+          el-col.preview-col(:span="8")
+            span css
+            el-input(:disabled="disabled", type='textarea', :rows='20', v-model='setting.reportStyle', @keyup='previewApiTemplate')
+          el-col.preview-col(:span="8")
+            el-button.f-r.mr-20(type="text", @click="setDefault") 恢复默认模板
             span 预览
-            el-row
-              span(:style='style.name') {{'接口名称:' + api.name}}
-              span(:style='style.url') {{'url:' + api.url}}
-              span(:style='style.method') {{'method' + api.method}}
-      el-button.mr-10(@click='$router.go(-1)') 返回
-      el-button(@click='save()') 保存
+            pre
+      .ta-c(v-if="disabled")
+        el-button(type="primary", @click="disabled=false") 编 辑
+      .ta-c(v-else="")
+        el-button.mr-10(@click="disabled=true") 取 消
+        el-button(type="primary", @click='save()') 保 存
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import http from '../service/http.ts'
-import cache from '../service/cache.ts'
+import http from '../service/http'
+import cache from '../service/cache'
+
 @Component
-export default class set extends Vue {
+export default class Set extends Vue {
   $message: any
-  $router: any
   api:any = {
     name: '示例接口',
     url: '/example.com/xx',
@@ -74,18 +62,18 @@ export default class set extends Vue {
     companyLogo: '',
     companyName: '',
     backupSize: '',
-    testAuto: true,
-    testInterval: 'hourly',
-    testTime: '',
-    dingInformOperation: [],
-    towerInformOperation: [],
-    towerInformUrl: '',
-    dingInformUrl: '',
     reportStyle: '',
     reportTemplate: ''
   }
+  disabled: boolean = true
   style:any = {}
-  previewApiTemplate() { this.style = JSON.parse(this.setting.reportStyle) }
+  previewApiTemplate() {
+    // todo..
+  }
+  setDefault() {
+    this.setting.reportStyle = this.setting.defaultStyle
+    this.setting.reportTemplate = this.setting.defaultTemplate
+  }
   async beforeMount() {
     let resp:any = await http.get('/api/setting')
     this.setting = resp || this.setting
@@ -107,7 +95,7 @@ export default class set extends Vue {
         color: 'blue'
       }
     }, null, 4)
-    this.previewApiTemplate()
+    // this.previewApiTemplate()
   }
   async save() {
     let resp:any = await http.put('/api/setting', this.setting)
@@ -120,17 +108,25 @@ export default class set extends Vue {
 
 <style lang="stylus" scoped>
 .setting
-  margin 50px auto 0
-  padding 20px 20px
-  width 1200px
   border 1px solid #ddd
-.company-logo
-  width 100px
-  height 100px
-  border 1px solid #ddd
-.template
-  .el-row
-    margin 10px 0
-    height 200px
-    border 1px solid #ddd
+.avatar-uploader
+  .avatar-uploader-icon
+    border 1px dashed #d9d9d9
+    border-radius 6px
+    position relative
+    overflow hidden
+    &:hover
+      border-color #20a0ff
+    font-size 28px
+    color #8c939d
+    width 178px
+    height 178px
+    line-height 178px
+  .avatar
+    width 178px
+    height 178px
+    display block 
+.preview-col
+  padding-right 10px
+
 </style>

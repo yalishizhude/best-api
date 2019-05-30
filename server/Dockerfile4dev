@@ -1,0 +1,12 @@
+# api-server
+FROM node:8
+RUN mkdir /app
+RUN chmod 777 /app
+WORKDIR /app
+VOLUME ["/app"]
+EXPOSE 2018
+ENV DB_HOST=api-db-dev
+COPY ./Hongkong /etc/localtime
+RUN npm set registry https://registry.npm.taobao.org
+RUN yarn global add nodemon typescript@2.4
+RUN echo "请执行 npm run init 安装依赖"

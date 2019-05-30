@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "compose": "npm run proxy && npm run init && sh",
-    "dev": "tsc -w & nodemon --inspect=0.0.0.0:5858 --delay 100ms -w ./dist dist/app.js",
-    "init": "npm i",
+    "compose": "yarn run proxy && yarn run init && bash",
+    "dev": "tsc -w & nodemon --inspect=0.0.0.0:5858 --delay 100ms -w ./dist ./dist/app.js",
+    "init": "yarn install --check-files",
     "proxy": "npm set registry https://registry.npm.taobao.org",
     "start": "pm2 start ./dist/app.js",
     "test": "tsc -w & nyc ava -w --verbose",
@@ -15,15 +15,20 @@
   "author": "yalishizhude",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^5.3.0",
+    "axios": "^0.16.2",
     "babel-eslint": "^7.1.1",
+    "json-schema-faker": "^0.5.0-rc11",
+    "jsonwebtoken": "^8.0.1",
     "koa": "^2.3.0",
+    "koa-better-body": "^3.0.4",
     "koa-better-router": "^2.1.1",
-    "koa-bodyparser": "^2.5.0",
     "koa-router": "^7.2.1",
-    "lodash": "^4.17.4",
     "mongoose": "^4.11.0",
+    "path-to-regexp": "^2.0.0",
     "request": "^2.81.0",
-    "rxjs": "^5.4.3"
+    "rxjs": "^5.4.3",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "ava": "^0.22.0",

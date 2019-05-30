@@ -1,11 +1,29 @@
 <h2>
   <%= name %>
 </h2>
-<hr>
-<pre><%= method %> &emsp; <%= url %></pre>
 <p>
   <%= desc %>
 </p>
+<pre><%= method %> &emsp; <%= url %></pre>
+<section <%= urlParams.length>0 ? '' : 'style="display:none"'%> >
+  <p>URL参数</p>
+  <table>
+    <tr>
+      <td>参数</td>
+      <td>说明</td>
+    </tr>
+    <% urlParams.forEach(it => { %>
+      <tr>
+        <td>
+          <%= it.name %>
+        </td>
+        <td>
+          <%= it.remark %>
+        </td>
+      </tr>
+      <% }) %>
+  </table>
+</section>
 <section <%= requestParams.length>0 ? '' : 'style="display:none"'%> >
   <p>请求参数</p>
   <table>
@@ -13,7 +31,6 @@
       <td>参数</td>
       <td>类型</td>
       <td>说明</td>
-      <td>校验</td>
     </tr>
     <% requestParams.forEach(it => { %>
       <tr>
@@ -26,14 +43,13 @@
         <td>
           <%= it.desc %>
         </td>
-        <td>
-          <%= it.rule %>
-        </td>
       </tr>
       <% }) %>
   </table>
-  <p>请求示例</p>
-  <pre><%=requestExample%></pre>
+  <div <%= requestExample ? '' : 'style="display:none"'%> >
+    <p>请求示例</p>
+    <pre><%=requestExample%></pre> 
+  </div>
 </section>
 <section <%= responseParams.length>0 ? '' : 'style="display:none"'%> >
   <p>返回参数</p>
@@ -42,7 +58,6 @@
       <td>参数</td>
       <td>类型</td>
       <td>说明</td>
-      <td>校验</td>
     </tr>
     <% responseParams.forEach(it => { %>
       <tr>
@@ -55,14 +70,13 @@
         <td>
           <%=it.desc%>
         </td>
-        <td>
-          <%=it.rule%>
-        </td>
       </tr>
       <% }) %>
   </table>
-  <p>返回示例</p>
-  <pre><%=responseExample%></pre>
+  <div <%= responseExample ? '' : 'style="display:none"'%> >
+    <p>返回示例</p>
+    <pre><%=responseExample%></pre>
+  </div>
 </section>
 <section <%= exceptions.length>0 ? '' : 'style="display:none"'%> >
   <p>异常处理</p>
@@ -81,3 +95,4 @@
     </tr>
   </table>
 </section>
+<hr>

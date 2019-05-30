@@ -1,163 +1,139 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import index from '../components/index'
-import project from '../components/project/index'
-import proAdd from '../components/project/proAdd'
-import proList from '../components/project/proList'
-import apiList from '../components/project/apiList'
-import apiView from '../components/project/apiView'
-import apiEdit from '../components/project/apiEdit'
-import apiHistory from '../components/project/apiHistory'
-import test from '../components/test'
-import message from '../components/message'
-import member from '../components/member'
-import doc from '../components/doc'
-import set from '../components/set'
-import userSet from '../components/user/set'
-import login from '../components/user/login'
+import Index from '../components/home/Index.vue'
+import Main from '../components/Main.vue'
+import proAdd from '../components/project/proAdd.vue'
+import proList from '../components/project/proList.vue'
+import apiList from '../components/project/apiList.vue'
+import test from '../components/test.vue'
+import message from '../components/message.vue'
+import member from '../components/member.vue'
+import doc from '../components/doc.vue'
+import set from '../components/set.vue'
+import Profile from '../components/user/Profile.vue'
+import Login from '../components/user/Login.vue'
+const ApiIndex = () => System.import('../components/project/ApiIndex.vue')
 
-Vue.use(Router)
+const projectRouter = [
+  {
+    path: 'project/list',
+    name: 'projectIndex',
+    component: proList,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: 'project/add',
+    name: 'proAdd',
+    component: proAdd,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: 'project/:proId/edit',
+    name: 'proEdit',
+    component: proAdd,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: 'project/:proId/api',
+    name: 'api',
+    component: ApiIndex
+  }
+]
+const testRouter = [{
+  path: '/test',
+  name: 'testIndex',
+  component: test,
+  meta: {
+    requireLogin: true
+  }
+}]
+const messageRouter = [{
+  path: '/message',
+  name: 'messageIndex',
+  component: message,
+  meta: {
+    requireLogin: true
+  }
+}]
+const memberRouter = [{
+  path: '/member',
+  name: 'memberIndex',
+  component: member,
+  meta: {
+    requireLogin: true
+  }
+}]
+const docRouter = [{
+  path: '/doc',
+  name: 'docIndex',
+  component: doc,
+  meta: {
+    requireLogin: false
+  }
+}]
+const setRouter = [{
+  path: '/set',
+  name: 'setIndex',
+  component: set,
+  meta: {
+    requireLogin: true
+  }
+}]
+const userRouter = [{
+  path: '/user/profile',
+  name: 'userProfile',
+  component: Profile,
+  meta: {
+    requireLogin: true
+  }
+}]
 
-const router:any = new Router({
+const router: any = new Router({
   mode: 'history',
   routes: [
     {
       path: '/',
-      name: 'index',
-      component: index
+      name: 'home',
+      component: Index
     },
     {
-      path: '/project',
-      name: 'project',
-      component: project,
-      children: [
-        {
-          path: 'list',
-          name: 'proList',
-          component: proList,
-          meta: {
-            requireLogin: true
-          }
-        },
-        {
-          path: 'add',
-          name: 'proAdd',
-          component: proAdd,
-          meta: {
-            requireLogin: true
-          }
-        },
-        {
-          path: ':proId/edit',
-          name: 'proEdit',
-          component: proAdd,
-          meta: {
-            requireLogin: true
-          }
-        },
-        {
-          path: ':proId/api',
-          name: 'proApiList',
-          component: apiList,
-          children: [
-            {
-              path: 'add',
-              name: 'apiAdd',
-              component: apiEdit,
-              meta: {
-                requireLogin: true
-              }
-            },
-            {
-              path: ':apiId/detail',
-              name: 'apiView',
-              component: apiView,
-              meta: {
-                requireLogin: true
-              },
-            },
-            {
-              path: ':apiId/edit',
-              name: 'apiEdit',
-              component: apiEdit,
-              meta: {
-                requireLogin: true
-              }
-            },
-            {
-              path: ':apiId/history',
-              name: 'apiHistory',
-              component: apiHistory,
-              meta: {
-                requireLogin: true
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: test,
-      meta: {
-        requireLogin: true
-      }
-    },
-    {
-      path: '/message',
-      name: 'message',
-      component: message,
-      meta: {
-        requireLogin: true
-      }
-    },
-    {
-      path: '/member',
-      name: 'member',
-      component: member,
-      meta: {
-        requireLogin: true
-      }
-    },
-    {
-      path: '/doc',
-      name: 'doc',
-      component: doc
-    },
-    {
-      path: '/set',
-      name: 'set',
-      component: set,
-      meta: {
-        requireLogin: true
-      }
-    },
-    {
-      path: '/user/set',
-      name: 'userSet',
-      component: userSet,
-      meta: {
-        requireLogin: true
-      }
-    },
-    {
-      path: '/user/login',
+      path: '/login',
       name: 'login',
-      component: login
+      component: Login
+    },
+    {
+      path: '',
+      name: 'main',
+      component: Main,
+      children: [
+        ...projectRouter,
+        ...testRouter,
+        ...docRouter,
+        ...userRouter,
+        ...setRouter,
+        ...messageRouter,
+        ...memberRouter
+      ]
     }
   ]
 })
 
-router.beforeEach((to:any, from:any, next:any) => {
-  if (to.matched.some((res:any) => res.meta.requireLogin)) {
+router.beforeEach((to: any, from: any, next: any) => {
+  if (to.matched.some((res: any) => res.meta.requireLogin)) {
     if (localStorage.getItem('token')) {
       next()
     } else {
-      next('/user/login')
+      next({ name: 'login' })
     }
   } else {
     next()
   }
 })
+
 export default router

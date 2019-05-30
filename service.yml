@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bestapi-service
+spec:
+  selector:
+    pod: bestapi
+  type: NodePort
+  ports:
+  - name: font
+    protocol: TCP
+    port: 2017
+    targetPort: 2017
+  - name: back
+    protocol: TCP
+    port: 2018
+    targetPort: 2018
+  - name: database
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bestapi-pod
+  labels:
+    pod: bestapi
+spec:
+  containers:
+  - image: mongo:3
+    name: api-db
+    imagePullPolicy: IfNotPresent
+  - image: yalishizhude/bestapi-server:deploy
+    name: api-server
+    # imagePullPolicy: IfNotPresent
+    imagePullPolicy: Always
+  - image: yalishizhude/bestapi-web:deploy
+    name: api-web
+    # imagePullPolicy: IfNotPresent
+    imagePullPolicy: Always
+  nodeSelector:
+    zone: master
+      

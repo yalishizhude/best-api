@@ -9,13 +9,13 @@
         el-table-column(label='用时', prop='timeLength', header-align='center', width='100')
         el-table-column(label='发起者', prop='starter', header-align='center')
         el-table-column(label='测试结果', prop='result', header-align='center')
-          template(scope='scope')
+          template(slot-scope='scope')
             span(v-if='scope.row.result.allPass') 全部通过
             span(v-if='!scope.row.result.allPass') {{'通测:' + scope.row.result.passTest}}
             span(v-if='!scope.row.result.allPass') {{'未测:' + scope.row.result.unTest}}
             span(v-if='!scope.row.result.allPass') {{'失败:' + scope.row.result.failTest}}
         el-table-column(label='', width='100')
-          template(scope='scope')
+          template(slot-scope='scope')
             el-button(size='small', v-if='!scope.row.result.allPass', @click='reTest(scope.row.projectId)') 重测
 </template>
 

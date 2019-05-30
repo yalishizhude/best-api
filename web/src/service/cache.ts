@@ -1,13 +1,30 @@
+let storage: any = localStorage || {}
+
 export default {
-  get: (key: string) => {
-    let v:any = localStorage.getItem(key)
-    return v
+  get(key: string, defaultValue?: any) {
+    let value: any = storage[key]
+    if (void 0 === storage[key] && defaultValue) {
+      this.set(key, defaultValue)
+      return defaultValue
+    } else {
+      try {
+        return JSON.parse(storage[key])
+      } catch (e) {
+        return storage[key]
+      } 
+    }
   },
-  set: (key: string, value: any) => {
-    return localStorage.setItem(key, value)
+  set(key: string, value: any) {
+    if (typeof value === 'object') {
+      storage[key] = JSON.stringify(value) 
+    } else {
+      storage[key] = value
+    }
   },
-  remove: (key: string) => {
-    return localStorage.removeItem(key)
+  remove(key: string) {
+    delete localStorage[key]
   },
-  clear: localStorage.clear
+  clear() {
+    storage.clear ? storage.clear() : storage = {}
+  }
 }

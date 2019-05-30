@@ -1,6 +1,11 @@
-package-lock.json
 npm-debug.log
 node_modules/
 dist/
 .nyc_output/
 coverage/
+server/static/
+server/upload/
+server/report/
+server/yarn-error.log
+.vscode/
+data/

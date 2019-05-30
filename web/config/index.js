@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://' + (process.env.SERVER_HOST||'api-server') + ':' + (process.env.SERVER_PORT||'2018'),
+        target: 'http://' + (process.env.SERVER_HOST || 'localhost') + ':' + (process.env.SERVER_PORT || '2018'),
         secure: false
       }
     },

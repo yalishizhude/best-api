@@ -1,0 +1,45 @@
+# 开发环境
+version: "2"
+services:
+  api-web-dev:
+    build:
+      context: ./web
+      dockerfile: Dockerfile4dev
+    image: bestapi_web:dev
+    container_name: api-web-dev
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    environment:
+      SERVER_HOST: api-server-dev 
+    volumes: 
+      - ./web:/app
+    ports:
+      - 20170:2017
+    depends_on:
+      - api-server-dev
+  api-server-dev:
+    build:
+      context: ./server
+      dockerfile: Dockerfile4dev
+    image: bestapi_server:dev
+    container_name: api-server-dev
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./server:/app
+    ports:
+      - 20180:2018
+      - 8102:5858
+    depends_on: 
+      - api-db-dev
+  api-db-dev:
+    image: mongo:3
+    container_name: api-db-dev
+    volumes:
+      - api_db_data:/data
+    ports:
+      - 27000:27017
+volumes:
+  api_db_data:

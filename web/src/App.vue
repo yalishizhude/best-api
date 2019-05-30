@@ -1,16 +1,11 @@
 <template lang="pug">
   div#app
-    nav-bar
     router-view.main.pt-40
 </template>
 
 <script lang="ts">
-  import navBar from './components/navBar'
   export default {
-    name: 'app',
-    components: {
-      navBar
-    }
+    name: 'app'
   }
 </script>
 
@@ -20,17 +15,29 @@
   box-sizing border-box
 html,
 body
+  background-color #f9fafc
   margin 0
+  height 100%
+  font-weight 100
 #app
+  height 100%
   font-family 'Avenir', Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
-  text-align center
   color #2c3e50
 ul
   margin 0
   padding 0
-li
-  margin 0
-  list-style none
+  li
+    margin 0
+    list-style none
+.wrap 
+  padding 20px 30px
+.v-wrap
+  padding-bottom 20px
+  padding-top 20px
+.el-form
+  background-color #fff
+.border
+  border 1px solid #ddd
 </style>

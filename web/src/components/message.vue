@@ -1,20 +1,16 @@
 <template lang="pug">
-  div
-    div.message-list
-      h3.message-title 全部通知
-      el-row(v-for='(m, index) in messageInfo.list', :key='index')
-        el-col(:span='6')
-          span {{m.when}}
-        el-col(:span='2')
-          span {{m.who}}
-        el-col(:span='2')
-          span {{m.do + '了'}}
-        el-col.ta-l(:span='10')
-          span {{m.what}}
-        el-col(:span='2')
-          el-button(v-if='m.read', type='text', disabled) 已读
-          el-button(v-if='!m.read', @click='mark(m, index)', type='text') 标为已读
-      el-pagination.mt-20(layout="sizes, prev, pager, next, total", :page-size='messageInfo.size', :total='messageInfo.total', @current-change='changePage', @size-change='changeSize', :current-page.sync='messageInfo.page')
+div.wrap.bg-white
+  el-button.mr-20.f-r(@click='mark()', type='text') 全部标为已读
+  .cl-b.mb-10
+  div.message(v-for='(m, index) in messageInfo.list', :key='m.id')
+    div
+      span {{m.operator}} {{m.operation}} {{m.module}} {{m.objectName}}
+      span.f-r(v-if='m.isRead', type='text', disabled) 已读
+      el-button.f-r(v-else, @click='mark(m, index)', type='text') 标为已读
+    div {{m.datetime}}
+  el-pagination.ta-c.mt-20(layout="sizes, prev, pager, next, total", :page-size='messageInfo.size', 
+  :total='messageInfo.total', @current-change='changePage', @size-change='changeSize', 
+  :current-page.sync='messageInfo.page')
 </template>
 
 <script lang="ts">
@@ -23,11 +19,7 @@ import Component from 'vue-class-component'
 import http from '../service/http.ts'
 interface Message extends Object {
   id: string,
-  who: string,
-  when: string,
-  do: string,
-  what: string,
-  read: boolean
+  isRead: boolean
 }
 interface MessageInfo extends Object {
   page: number,
@@ -45,7 +37,7 @@ export default class message extends Vue {
     total: 0,
     list: []
   }
-  async getMessageList(url:string, page:number, size:number) {
+  async getMessageList(url:string, page:number=1, size:number=10) {
     let resp:any = await http.get(url + '?page=' + page + '&size=' + size)
     this.messageInfo = resp
   }
@@ -53,9 +45,12 @@ export default class message extends Vue {
     this.getMessageList(this.url, 1, this.messageInfo.size)
   }
   async mark(message: any, index:any) {
-    let resp:any = await http.put('/api/message/' + message.id, { read: true })
+    const url = void 0 !== message ? '/api/message/' + message.id : '/api/message'
+    let resp:any = await http.put(url, { read: true })
     if (resp.errCode === 0) {
-      this.messageInfo.list[index].read = true
+      this.messageInfo.list.forEach((m: any, i: number) => {
+        if (i === index || index === void 0) m.isRead = true
+      })
     } else {
       this.$message({type: 'error', message: resp.errMsg || '操作失败'})
     }
@@ -70,9 +65,11 @@ export default class message extends Vue {
 </script>
 
 <style lang="stylus" scoped>
-.message-list
-  margin 0 auto
-  width 960px
+.message
+  border-bottom 1px solid #ddd
+  padding 10px 20px
+  &:nth-child(odd)
+    background-color #fafafa
 .message-title
   margin 0
   line-height 80px

@@ -1,0 +1,13 @@
+# vue-cli
+FROM node:8
+RUN mkdir /app
+RUN chmod 777 /app
+WORKDIR /app
+EXPOSE 8080 2017
+VOLUME ["/app"]
+
+COPY ./Hongkong /etc/localtime
+RUN npm set registry https://registry.npm.taobao.org
+RUN yarn global add typescript
+ENV SERVER_HOST=api-server-dev
+RUN echo "请执行 npm run init 安装依赖"
